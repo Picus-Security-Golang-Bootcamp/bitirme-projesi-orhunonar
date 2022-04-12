@@ -12,6 +12,6 @@ var db *gorm.DB
 func main() {
 
 	database.ConnectDatabase()
-	database.SignIn()
+	database.CreateSuperUser()
 
 }
