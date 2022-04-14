@@ -4,7 +4,6 @@ import (
 	"finalproject/products/categories"
 	"finalproject/products/oldorders"
 	"log"
-	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -193,7 +192,7 @@ func GetTotalPrice() float64 {
 
 }
 func CompleteOrder() {
-	time := time.Now()
+
 	var products []Cart
 	var shoe categories.Shoes
 	var pants categories.Pants
@@ -222,15 +221,10 @@ func CompleteOrder() {
 		}
 		oldorders.AddOldOrder(product.Name, product.Stock)
 	}
-	//if 14 Days later
-	if time.Day() == 14 {
-		db.Delete(&products)
-
-	}
+	db.Delete(&products)
 
 }
 
-// Cancel Order in 14 days
 func CancelOrder() {
 
 	var products []Cart
