@@ -1,0 +1,266 @@
+package cart
+
+import (
+	"finalproject/products/categories"
+	"finalproject/products/oldorders"
+	"log"
+	"time"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+type Cart struct {
+	gorm.Model
+	Name  string  `csv:"name"`
+	Price float64 `csv:"price"`
+	Stock int     `csv:"stock"`
+}
+
+//Add a shoe to the cart
+func AddShoeToCart(Name string, Stock int) {
+
+	var shoe categories.Shoes
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Where("name = ?", Name).First(&shoe)
+	if shoe.Name == Name {
+		if shoe.Stock >= Stock {
+
+			shoesincart := Cart{Name: Name, Stock: Stock, Price: shoe.Price}
+			db.Create(&shoesincart)
+
+		} else {
+			log.Fatal("Not enough stock")
+		}
+
+	} else {
+		log.Fatal("Shoe not found")
+	}
+
+}
+
+//Add a product to the cart
+func AddPantsToCart(Name string, Stock int) {
+
+	var pants categories.Pants
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Where("name = ?", Name).First(&pants)
+	if pants.Name == Name {
+		if pants.Stock >= Stock {
+
+			pantsincart := Cart{Name: Name, Stock: Stock, Price: pants.Price}
+			db.Create(&pantsincart)
+
+		} else {
+			log.Fatal("Not enough stock")
+		}
+
+	} else {
+		log.Fatal("Pants not found")
+	}
+
+}
+
+//Add a glasses to the cart
+func AddGlassesToCart(Name string, Stock int) {
+
+	var glasses categories.Glasses
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Where("name = ?", Name).First(&glasses)
+	if glasses.Name == Name {
+		if glasses.Stock >= Stock {
+
+			glassesincart := Cart{Name: Name, Stock: Stock, Price: glasses.Price}
+			db.Create(&glassesincart)
+
+		} else {
+			log.Fatal("Not enough stock")
+		}
+
+	} else {
+		log.Fatal("Glasses not found")
+	}
+
+}
+
+// RemoveProductFromCart removes a product from the cart
+func RemoveProductFromCart(Name string) {
+
+	var products []Cart
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Where("name = ?", Name).Find(&products)
+	if products[0].Name == Name {
+		db.Where("name = ?", Name).Delete(&products)
+	} else {
+		log.Fatal("Product not found")
+	}
+
+}
+
+//Update the stock of a product
+func UpdateProductStock(Name string, Stock int) {
+
+	var products []Cart
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Where("name = ?", Name).Find(&products)
+	if products[0].Name == Name {
+		if products[0].Stock >= Stock {
+			db.Model(&products).Update("stock", Stock)
+		} else {
+			log.Fatal("Not enough stock")
+		}
+	} else {
+		log.Fatal("Product not found")
+	}
+
+}
+
+//List all products in cart
+func ListProducts() {
+	var products []Cart
+
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Find(&products)
+
+	for _, product := range products {
+		log.Println(product.Name)
+	}
+
+}
+
+//Get the total price of the cart
+func GetTotalPrice() float64 {
+	var products []Cart
+	var totalprice float64
+
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Find(&products)
+
+	for _, product := range products {
+		totalprice += product.Price
+	}
+
+	return totalprice
+
+}
+func CompleteOrder() {
+	time := time.Now()
+	var products []Cart
+	var shoe categories.Shoes
+	var pants categories.Pants
+	var glasses categories.Glasses
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+
+	if err != nil {
+		panic(err)
+	}
+	db.Find(&products)
+
+	for _, product := range products {
+		if product.Name == shoe.Name {
+			db.Where("name = ?", product.Name).First(&shoe)
+			db.Model(&shoe).Update("stock", shoe.Stock-product.Stock)
+		} else if product.Name == pants.Name {
+			db.Where("name = ?", product.Name).First(&pants)
+			db.Model(&pants).Update("stock", pants.Stock-product.Stock)
+		} else if product.Name == glasses.Name {
+			db.Where("name = ?", product.Name).First(&glasses)
+			db.Model(&glasses).Update("stock", glasses.Stock-product.Stock)
+		}
+		oldorders.AddOldOrder(product.Name, product.Stock)
+	}
+	//if 14 Days later
+	if time.Day() == 14 {
+		db.Delete(&products)
+
+	}
+
+}
+
+// Cancel Order in 14 days
+func CancelOrder() {
+
+	var products []Cart
+	var shoe categories.Shoes
+	var pants categories.Pants
+	var glasses categories.Glasses
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+
+	if err != nil {
+		panic(err)
+	}
+	db.Find(&products)
+
+	for _, product := range products {
+		if product.Name == shoe.Name {
+			db.Where("name = ?", product.Name).First(&shoe)
+			db.Model(&shoe).Update("stock", shoe.Stock+product.Stock)
+		} else if product.Name == pants.Name {
+			db.Where("name = ?", product.Name).First(&pants)
+			db.Model(&pants).Update("stock", pants.Stock+product.Stock)
+		} else if product.Name == glasses.Name {
+			db.Where("name = ?", product.Name).First(&glasses)
+			db.Model(&glasses).Update("stock", glasses.Stock+product.Stock)
+		}
+		oldorders.RemoveOldOrder(product.Name)
+	}
+	db.Delete(&products)
+
+}

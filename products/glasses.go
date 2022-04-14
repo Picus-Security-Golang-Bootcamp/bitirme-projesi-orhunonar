@@ -105,6 +105,21 @@ func ListGlasses() {
 	var glasses []categories.Glasses
 	db.Find(&glasses)
 	for _, glasses := range glasses {
-		fmt.Println(glasses)
+		fmt.Println(glasses.Name)
+	}
+}
+func BuyGlasses(Name string, Stock int) {
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	var glasses categories.Glasses
+	db.Where("name = ?", Name).First(&glasses)
+	if glasses.Name == Name {
+		glasses.Stock = glasses.Stock - Stock
+		db.Save(&glasses)
+		log.Println("Glasses updated successfully")
+	} else {
+		log.Println("Glasses not found")
 	}
 }

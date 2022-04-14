@@ -113,3 +113,20 @@ func ListPants() {
 		fmt.Println(pant.Name)
 	}
 }
+func BuyPants(Name string, Stock int) {
+
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+
+	var pant categories.Pants
+	db.Where("name = ?", Name).First(&pant)
+	if pant.Name == Name {
+		pant.Stock = pant.Stock - Stock
+		db.Save(&pant)
+		log.Println("Pant bought successfully")
+	} else {
+		log.Println("Pant not found")
+	}
+}

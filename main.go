@@ -9,11 +9,8 @@ var db *gorm.DB
 
 func main() {
 
-	//database.ConnectDatabase()
-
 	//products.InsertShoes()
-	//products.InsertPants()
-	//products.InsertGlasses()
-	//products.ListShoes()
-
+	//cart.AddShoeToCart("supermodelx1", 1)
+	//cart.ListProducts()
+	//cart.RemoveProductFromCart("supermodelx1")
 }
