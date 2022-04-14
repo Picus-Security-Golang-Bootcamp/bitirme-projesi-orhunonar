@@ -1,8 +1,6 @@
 package main
 
 import (
-	"finalproject/database"
-
 	"gorm.io/gorm"
 )
 
@@ -11,7 +9,11 @@ var db *gorm.DB
 
 func main() {
 
-	database.ConnectDatabase()
-	database.CreateSuperUser()
+	//database.ConnectDatabase()
+
+	//products.InsertShoes()
+	//products.InsertPants()
+	//products.InsertGlasses()
+	//products.ListShoes()
 
 }

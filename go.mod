@@ -2,7 +2,10 @@ module finalproject
 
 go 1.18
 
-require gorm.io/gorm v1.23.4
+require (
+	github.com/gocarina/gocsv v0.0.0-20220310154401-d4df709ca055
+	gorm.io/gorm v1.23.4
+)
 
 require (
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

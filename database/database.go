@@ -2,6 +2,7 @@ package database
 
 import (
 	"crypto/sha256"
+
 	"fmt"
 	"log"
 
@@ -109,5 +110,23 @@ func CreateSuperUser() {
 		user := User{Name: "admin", Username: "admin", Email: "admin@gmail.com", Password: sumString}
 		db.Create(&user)
 		log.Println("Super user created successfully")
+	}
+}
+
+func DeleteUser(Username string) {
+	var user User
+	db.Where("username = ?", Username).First(&user)
+	if user.Username == Username {
+		db.Delete(&user)
+		log.Println("User deleted successfully")
+	} else {
+		log.Println("User not found")
+	}
+}
+func ListUsers() {
+	var users []User
+	db.Find(&users)
+	for _, user := range users {
+		fmt.Println(user.Name)
 	}
 }
