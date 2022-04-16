@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -18,6 +19,7 @@ type User struct {
 	Email           string
 	Password        string
 	ConfirmPassword string
+	jwt.StandardClaims
 }
 
 var db *gorm.DB
@@ -79,7 +81,7 @@ func CheckEmail(Email string) bool {
 	}
 }
 
-// log in
+//log in
 func LogIn(Username string, Password string) bool {
 	var user User
 	db.Where("username = ?", Username).First(&user)
@@ -87,7 +89,9 @@ func LogIn(Username string, Password string) bool {
 		sum := sha256.Sum256([]byte(Password))
 		sumString := fmt.Sprintf("%x", sum)
 		if sumString == user.Password {
+
 			log.Println("Logged in successfully")
+
 			return true
 		} else {
 			log.Println("Wrong password")
@@ -110,6 +114,7 @@ func CreateSuperUser() {
 		sumString := fmt.Sprintf("%x", sum)
 		user := User{Name: "admin", Username: "admin", Email: "admin@gmail.com", Password: sumString}
 		db.Create(&user)
+
 		log.Println("Super user created successfully")
 	}
 }
@@ -117,7 +122,7 @@ func CreateSuperUser() {
 func DeleteUser(Username string) {
 	var user User
 	db.Where("username = ?", Username).First(&user)
-	if user.Username == Username {
+	if user.Username == Username && user.Username != "admin" {
 		db.Delete(&user)
 		log.Println("User deleted successfully")
 	} else {

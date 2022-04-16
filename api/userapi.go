@@ -6,6 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var MyToken string
+var err error
+
 // Homepage
 func HomePage(c *gin.Context) {
 	c.JSON(200, gin.H{
@@ -40,9 +43,16 @@ func LogIn(c *gin.Context) {
 	Username := c.Params.ByName("username")
 	Password := c.Params.ByName("password")
 	database.LogIn(Username, Password)
-	c.JSON(200, gin.H{
-		"message": "User logged in successfully",
-	})
+	if database.LogIn(Username, Password) {
+		MyToken, err = database.GenerateJWT(Username)
+		c.JSON(200, gin.H{
+			"message": "User logged in successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "Wrong password or username",
+		})
+	}
 }
 
 func SuperUser(c *gin.Context) {
@@ -53,23 +63,45 @@ func SuperUser(c *gin.Context) {
 }
 
 func ListUsers(c *gin.Context) {
-	database.ListUsers(c)
-	c.JSON(200, gin.H{
-		"message": "Users Listed successfully",
-	})
+	if database.VerifyAdmin(MyToken) {
+		database.ListUsers(c)
+		c.JSON(200, gin.H{
+			"message": "Users Listed successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 
 func DeleteUser(c *gin.Context) {
-	Username := c.Params.ByName("username")
-	database.DeleteUser(Username)
-	c.JSON(200, gin.H{
-		"message": "User deleted successfully",
-	})
+
+	if database.VerifyAdmin(MyToken) {
+
+		Username := c.Params.ByName("username")
+		database.DeleteUser(Username)
+		c.JSON(200, gin.H{
+			"message": "User deleted successfully",
+		})
+
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to delete users",
+		})
+	}
+
 }
 func SearchUser(c *gin.Context) {
-	Username := c.Params.ByName("username")
-	database.SearchUser(c, Username)
-	c.JSON(200, gin.H{
-		"message": "User searched successfully",
-	})
+	if database.VerifyAdmin(MyToken) {
+		Username := c.Params.ByName("username")
+		database.SearchUser(c, Username)
+		c.JSON(200, gin.H{
+			"message": "User searched successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }

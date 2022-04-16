@@ -1,126 +1,217 @@
 package cartapi
 
 import (
+	"finalproject/api"
 	"finalproject/products/cart"
 	"finalproject/products/oldorders"
+	database "finalproject/user_database"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AddShoeToCart(c *gin.Context) {
-	Name := c.Param("name")
-	Stock := c.Param("stock")
 
-	NewStock, _ := strconv.Atoi(Stock)
+	if database.VerifyToken(api.MyToken) {
 
-	cart.AddShoeToCart(Name, NewStock)
+		Name := c.Param("name")
+		Stock := c.Param("stock")
 
-	c.JSON(200, gin.H{
-		"message": "Shoe added to cart successfully",
-	})
+		NewStock, _ := strconv.Atoi(Stock)
+
+		cart.AddShoeToCart(Name, NewStock)
+
+		c.JSON(200, gin.H{
+			"message": "Shoe added to cart successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func AddGlassesToCart(c *gin.Context) {
-	Name := c.Param("name")
-	Stock := c.Param("stock")
 
-	NewStock, _ := strconv.Atoi(Stock)
+	if database.VerifyToken(api.MyToken) {
 
-	cart.AddGlassesToCart(Name, NewStock)
+		Name := c.Param("name")
+		Stock := c.Param("stock")
 
-	c.JSON(200, gin.H{
-		"message": "Glasses added to cart successfully",
-	})
+		NewStock, _ := strconv.Atoi(Stock)
+
+		cart.AddGlassesToCart(Name, NewStock)
+
+		c.JSON(200, gin.H{
+			"message": "Glasses added to cart successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func AddPantsToCart(c *gin.Context) {
-	Name := c.Param("name")
-	Stock := c.Param("stock")
 
-	NewStock, _ := strconv.Atoi(Stock)
+	if database.VerifyToken(api.MyToken) {
 
-	cart.AddPantsToCart(Name, NewStock)
+		Name := c.Param("name")
+		Stock := c.Param("stock")
 
-	c.JSON(200, gin.H{
-		"message": "Pants added to cart successfully",
-	})
+		NewStock, _ := strconv.Atoi(Stock)
+
+		cart.AddPantsToCart(Name, NewStock)
+
+		c.JSON(200, gin.H{
+			"message": "Pants added to cart successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func RemoveProductFromCart(c *gin.Context) {
-	Name := c.Param("name")
 
-	cart.RemoveProductFromCart(Name)
+	if database.VerifyToken(api.MyToken) {
 
-	c.JSON(200, gin.H{
-		"message": "Product removed from cart successfully",
-	})
+		Name := c.Param("name")
+
+		cart.RemoveProductFromCart(Name)
+
+		c.JSON(200, gin.H{
+			"message": "Product removed from cart successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func UpdateProductInCart(c *gin.Context) {
-	Name := c.Param("name")
-	Stock := c.Param("stock")
 
-	NewStock, _ := strconv.Atoi(Stock)
+	if database.VerifyToken(api.MyToken) {
 
-	cart.UpdateProductStock(Name, NewStock)
+		Name := c.Param("name")
+		Stock := c.Param("stock")
 
-	c.JSON(200, gin.H{
-		"message": "Product updated in cart successfully",
-	})
+		NewStock, _ := strconv.Atoi(Stock)
+
+		cart.UpdateProductStock(Name, NewStock)
+
+		c.JSON(200, gin.H{
+			"message": "Product updated in cart successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func ListCart(c *gin.Context) {
 
-	cart.ListProducts(c)
+	if database.VerifyToken(api.MyToken) {
 
-	c.JSON(200, gin.H{
-		"message": "Cart listed successfully",
-	})
+		cart.ListProducts(c)
+
+		c.JSON(200, gin.H{
+			"message": "Cart listed successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func GetTotalPrice(c *gin.Context) {
 
-	cart.GetTotalPrice(c)
+	if database.VerifyToken(api.MyToken) {
 
-	c.JSON(200, gin.H{
-		"message": "Total price listed successfully",
-	})
+		cart.GetTotalPrice(c)
+
+		c.JSON(200, gin.H{
+			"message": "Total price listed successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func CompleteOrder(c *gin.Context) {
 
-	cart.CompleteOrder()
+	if database.VerifyToken(api.MyToken) {
 
-	c.JSON(200, gin.H{
-		"message": "Order completed successfully",
-	})
+		cart.CompleteOrder()
+
+		c.JSON(200, gin.H{
+			"message": "Order completed successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func ClearCart(c *gin.Context) {
 
-	cart.ClearCart()
+	if database.VerifyToken(api.MyToken) {
 
-	c.JSON(200, gin.H{
-		"message": "Cart cleared successfully",
-	})
+		cart.ClearCart()
+
+		c.JSON(200, gin.H{
+			"message": "Cart cleared successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func CancelOrder(c *gin.Context) {
 
-	cart.CancelOrder(c)
+	if database.VerifyToken(api.MyToken) {
 
-	c.JSON(200, gin.H{
-		"message": "Order cancelled successfully",
-	})
+		cart.CancelOrder(c)
+
+		c.JSON(200, gin.H{
+			"message": "Order cancelled successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 
 func GetOldOrders(c *gin.Context) {
 
-	oldorders.GetOldOrders(c)
+	if database.VerifyToken(api.MyToken) {
 
-	c.JSON(200, gin.H{
-		"message": "Old orders listed successfully",
-	})
+		oldorders.GetOldOrders(c)
+
+		c.JSON(200, gin.H{
+			"message": "Old orders listed successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
 func SearchProductInCart(c *gin.Context) {
 
-	Name := c.Param("name")
+	if database.VerifyToken(api.MyToken) {
 
-	cart.SearchProductInCart(Name, c)
+		Name := c.Param("name")
 
-	c.JSON(200, gin.H{
-		"message": "Product searched in cart successfully",
-	})
+		cart.SearchProductInCart(Name, c)
+
+		c.JSON(200, gin.H{
+			"message": "Product searched in cart successfully",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "You are not authorized to perform this action",
+		})
+	}
 }
