@@ -68,6 +68,7 @@ func main() {
 	r.POST("/cancled_order", cartapi.CancelOrder)
 	r.GET("/old_order", cartapi.GetOldOrders)
 
-	r.Run() // listen and serve on
+	// listen and serve on port 8080
+	r.Run(":8080")
 
 }
