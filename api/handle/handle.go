@@ -21,12 +21,6 @@ func InternalServerError(c *gin.Context, message string) {
 	})
 }
 
-func Success(c *gin.Context, message string) {
-	c.JSON(200, gin.H{
-		"message": message,
-	})
-}
-
 func Created(c *gin.Context, message string) {
 	c.JSON(201, gin.H{
 		"message": message,
@@ -66,23 +60,5 @@ func NotImplemented(c *gin.Context) {
 func NotAcceptable(c *gin.Context) {
 	c.JSON(406, gin.H{
 		"message": "Not Acceptable",
-	})
-}
-
-func Gone(c *gin.Context) {
-	c.JSON(410, gin.H{
-		"message": "Gone",
-	})
-}
-
-func LengthRequired(c *gin.Context) {
-	c.JSON(411, gin.H{
-		"message": "Length Required",
-	})
-}
-
-func PreconditionFailed(c *gin.Context) {
-	c.JSON(412, gin.H{
-		"message": "Precondition Failed",
 	})
 }
