@@ -224,6 +224,7 @@ func CompleteOrder() {
 		}
 		oldorders.AddOldOrder(product.Name, product.Stock)
 	}
+	db.Delete(&products)
 
 }
 
@@ -245,37 +246,40 @@ func ClearCart() {
 
 }
 
-func CancelOrder() {
+func CancelOrder(c *gin.Context) {
 
-	var products []Cart
-	var shoe categories.Shoes
-	var pants categories.Pants
-	var glasses categories.Glasses
-	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	err = db.AutoMigrate(&Cart{})
-
-	if err != nil {
-		panic(err)
-	}
-	db.Find(&products)
-
-	for _, product := range products {
-		if product.Name == shoe.Name {
-			db.Where("name = ?", product.Name).First(&shoe)
-			db.Model(&shoe).Update("stock", shoe.Stock+product.Stock)
-		} else if product.Name == pants.Name {
-			db.Where("name = ?", product.Name).First(&pants)
-			db.Model(&pants).Update("stock", pants.Stock+product.Stock)
-		} else if product.Name == glasses.Name {
-			db.Where("name = ?", product.Name).First(&glasses)
-			db.Model(&glasses).Update("stock", glasses.Stock+product.Stock)
+	//if 14 days has not been passed, the order can be cancelled
+	if oldorders.CheckDate(c) {
+		var products []Cart
+		var shoe categories.Shoes
+		var pants categories.Pants
+		var glasses categories.Glasses
+		db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+		if err != nil {
+			panic(err)
 		}
-		oldorders.RemoveOldOrder(product.Name)
+		err = db.AutoMigrate(&Cart{})
+		if err != nil {
+			panic(err)
+		}
+		db.Find(&products)
+
+		for _, product := range products {
+			if product.Name == shoe.Name {
+				db.Where("name = ?", product.Name).First(&shoe)
+				db.Model(&shoe).Update("stock", shoe.Stock+product.Stock)
+			} else if product.Name == pants.Name {
+				db.Where("name = ?", product.Name).First(&pants)
+				db.Model(&pants).Update("stock", pants.Stock+product.Stock)
+			} else if product.Name == glasses.Name {
+				db.Where("name = ?", product.Name).First(&glasses)
+				db.Model(&glasses).Update("stock", glasses.Stock+product.Stock)
+			}
+		}
+		db.Delete(&products)
+	} else {
+		log.Fatal("Order can not be cancelled")
 	}
-	db.Delete(&products)
 
 }
 func SearchProductInCart(Name string, c *gin.Context) {
@@ -295,4 +299,11 @@ func SearchProductInCart(Name string, c *gin.Context) {
 		log.Fatal("Product not found")
 	}
 
+}
+
+//Check if 14 days passed from today
+
+type Date struct {
+	gorm.Model
+	Date string
 }

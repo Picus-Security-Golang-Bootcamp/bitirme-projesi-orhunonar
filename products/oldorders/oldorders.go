@@ -1,6 +1,8 @@
 package oldorders
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -57,5 +59,25 @@ func GetOldOrders(c *gin.Context) []OldOrders {
 		"oldorders": oldorders,
 	})
 	return oldorders
+
+}
+func CheckDate(c *gin.Context) bool {
+	//check if 14 days passed
+	var oldorders []OldOrders
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&OldOrders{})
+	if err != nil {
+		panic(err)
+	}
+	db.Find(&oldorders)
+	for _, oldorder := range oldorders {
+		if time.Now().Sub(oldorder.CreatedAt).Hours() > 14 {
+			return true
+		}
+	}
+	return false
 
 }

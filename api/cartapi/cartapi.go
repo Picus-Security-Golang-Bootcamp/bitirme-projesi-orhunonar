@@ -99,7 +99,7 @@ func ClearCart(c *gin.Context) {
 }
 func CancelOrder(c *gin.Context) {
 
-	cart.CancelOrder()
+	cart.CancelOrder(c)
 
 	c.JSON(200, gin.H{
 		"message": "Order cancelled successfully",
