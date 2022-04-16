@@ -75,9 +75,9 @@ func CheckDate(c *gin.Context) bool {
 	db.Find(&oldorders)
 	for _, oldorder := range oldorders {
 		if time.Now().Sub(oldorder.CreatedAt).Hours() > 14 {
-			return true
+			return false
 		}
 	}
-	return false
+	return true
 
 }
