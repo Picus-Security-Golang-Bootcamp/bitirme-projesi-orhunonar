@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -123,10 +124,17 @@ func DeleteUser(Username string) {
 		log.Println("User not found")
 	}
 }
-func ListUsers() {
+func ListUsers(c *gin.Context) {
 	var users []User
 	db.Find(&users)
 	for _, user := range users {
 		fmt.Println(user.Name)
 	}
+	c.JSON(200, users)
+}
+
+func SearchUser(c *gin.Context, username string) {
+	var user User
+	db.Where("username = ?", username).First(&user)
+	c.JSON(200, user)
 }

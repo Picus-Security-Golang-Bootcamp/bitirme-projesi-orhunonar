@@ -1,6 +1,11 @@
 package categories
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
 
 type Shoes struct {
 	gorm.Model
@@ -32,4 +37,14 @@ type Pants struct {
 	Size   int     `csv:"size"`
 	Rating float64 `csv:"rating"`
 	Gender string  `csv:"gender"`
+}
+
+func ListCategories(c *gin.Context) {
+	categories := [...]string{"shoes", "glasses", "pants"}
+	for _, category := range categories {
+		fmt.Println(category)
+	}
+	c.JSON(200, gin.H{
+		"Categories": categories,
+	})
 }

@@ -1,14 +1,16 @@
-package products
+package search
 
 import (
 	"finalproject/products/categories"
 	"fmt"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func SearchShoesByName(Name string) {
+func SearchShoesByName(c *gin.Context) {
+	Name := c.Params.ByName("name")
 
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
 	if err != nil {
@@ -34,10 +36,18 @@ func SearchShoesByName(Name string) {
 	} else {
 		fmt.Println("Shoe not found")
 	}
-
+	c.JSON(200, gin.H{
+		"Brand":  shoes[0].Brand,
+		"Name":   shoes[0].Name,
+		"Price":  shoes[0].Price,
+		"Stock":  shoes[0].Stock,
+		"Size":   shoes[0].Size,
+		"Rating": shoes[0].Rating,
+		"Gender": shoes[0].Gender,
+	})
 }
-func SearchPantsByName(Name string) {
-
+func SearchPantsByName(c *gin.Context) {
+	Name := c.Params.ByName("name")
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -62,13 +72,24 @@ func SearchPantsByName(Name string) {
 	} else {
 		fmt.Println("Pant not found")
 	}
+	c.JSON(200, gin.H{
+		"Brand":  pants[0].Brand,
+		"Name":   pants[0].Name,
+		"Price":  pants[0].Price,
+		"Stock":  pants[0].Stock,
+		"Size":   pants[0].Size,
+		"Rating": pants[0].Rating,
+		"Gender": pants[0].Gender,
+	})
 }
 
-func SearchGlassesByName(Name string) {
+func SearchGlassesByName(c *gin.Context) {
 
+	Name := c.Params.ByName("name")
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
 	if err != nil {
 		panic(err)
+
 	}
 
 	err = db.AutoMigrate(&categories.Shoes{})
@@ -90,4 +111,13 @@ func SearchGlassesByName(Name string) {
 	} else {
 		fmt.Println("Glasses not found")
 	}
+	c.JSON(200, gin.H{
+		"Brand":  glasses[0].Brand,
+		"Name":   glasses[0].Name,
+		"Price":  glasses[0].Price,
+		"Stock":  glasses[0].Stock,
+		"Size":   glasses[0].Size,
+		"Rating": glasses[0].Rating,
+		"Gender": glasses[0].Gender,
+	})
 }

@@ -5,6 +5,7 @@ import (
 	"finalproject/products/oldorders"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -150,7 +151,7 @@ func UpdateProductStock(Name string, Stock int) {
 }
 
 //List all products in cart
-func ListProducts() {
+func ListProducts(c *gin.Context) {
 	var products []Cart
 
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
@@ -166,11 +167,12 @@ func ListProducts() {
 	for _, product := range products {
 		log.Println(product.Name)
 	}
+	c.JSON(200, products)
 
 }
 
 //Get the total price of the cart
-func GetTotalPrice() float64 {
+func GetTotalPrice(c *gin.Context) float64 {
 	var products []Cart
 	var totalprice float64
 
@@ -187,6 +189,7 @@ func GetTotalPrice() float64 {
 	for _, product := range products {
 		totalprice += product.Price
 	}
+	c.JSON(200, totalprice)
 
 	return totalprice
 
@@ -221,7 +224,24 @@ func CompleteOrder() {
 		}
 		oldorders.AddOldOrder(product.Name, product.Stock)
 	}
-	db.Delete(&products)
+
+}
+
+func ClearCart() {
+	var products []Cart
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Find(&products)
+
+	for _, product := range products {
+		db.Where("name = ?", product.Name).Delete(&product)
+	}
 
 }
 
@@ -256,5 +276,23 @@ func CancelOrder() {
 		oldorders.RemoveOldOrder(product.Name)
 	}
 	db.Delete(&products)
+
+}
+func SearchProductInCart(Name string, c *gin.Context) {
+	var products []Cart
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&Cart{})
+	if err != nil {
+		panic(err)
+	}
+	db.Where("name = ?", Name).Find(&products)
+	if products[0].Name == Name {
+		c.JSON(200, products)
+	} else {
+		log.Fatal("Product not found")
+	}
 
 }

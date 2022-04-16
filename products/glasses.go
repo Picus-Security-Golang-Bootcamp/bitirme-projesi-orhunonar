@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/gocarina/gocsv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -97,7 +98,7 @@ func CheckGlasses(Name string) bool {
 	}
 }
 
-func ListGlasses() {
+func ListGlasses(c *gin.Context) {
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -107,6 +108,9 @@ func ListGlasses() {
 	for _, glasses := range glasses {
 		fmt.Println(glasses.Name)
 	}
+	c.JSON(200, gin.H{
+		"glasses": glasses,
+	})
 }
 func BuyGlasses(Name string, Stock int) {
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
