@@ -4,7 +4,7 @@
 
 ## Categories:
 - There are 3 categories (Shoes,Pants,Glasses). They are created using csv files. You may find the files in csvfiles.
-# Products:
+## Products:
 - Products can be added by Super User manually using APIs or Super User can modify the csv files to change the products.
 
 ## User Types:
