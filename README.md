@@ -1,4 +1,4 @@
-### Final Project of Picus Security Golang Bootcamp
+# Final Project of Picus Security Golang Bootcamp
 
 - This project is a sample E-Commerce Back-End project that is coded in Go Programming Language. 
 
