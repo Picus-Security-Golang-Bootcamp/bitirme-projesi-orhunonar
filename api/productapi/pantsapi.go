@@ -2,6 +2,7 @@ package productapi
 
 import (
 	"finalproject/api"
+	"finalproject/pagination"
 	"finalproject/products"
 	database "finalproject/user_database"
 	"strconv"
@@ -73,11 +74,19 @@ func DeletePants(c *gin.Context) {
 
 func ListPants(c *gin.Context) {
 
-	products.ListPants(c)
+	var pagination pagination.Pagination
+	page := c.Params.ByName("page")
+	limit := c.Params.ByName("limit")
+
+	pageInt, _ := strconv.Atoi(page)
+	limitInt, _ := strconv.Atoi(limit)
+
+	pagination.SetPagination(pageInt, limitInt, products.CountPants())
+	products.ListPants(c, pagination.Page, pagination.Limit)
+
 	c.JSON(200, gin.H{
 		"message": "Pants listed successfully",
 	})
-
 }
 
 func BuyPants(c *gin.Context) {

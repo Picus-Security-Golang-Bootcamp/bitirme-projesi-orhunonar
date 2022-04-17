@@ -1,7 +1,9 @@
 package api
 
 import (
+	"finalproject/pagination"
 	database "finalproject/user_database"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -64,7 +66,19 @@ func SuperUser(c *gin.Context) {
 
 func ListUsers(c *gin.Context) {
 	if database.VerifyAdmin(MyToken) {
-		database.ListUsers(c)
+
+		// Make pagination when listing users
+		var pagination pagination.Pagination
+		page := c.Params.ByName("page")
+		limit := c.Params.ByName("limit")
+
+		pageInt, _ := strconv.Atoi(page)
+		limitInt, _ := strconv.Atoi(limit)
+
+		pagination.SetPagination(pageInt, limitInt, database.CountUsers())
+		//List users with pagination
+		database.ListUsers(c, pagination.Limit, pagination.Page)
+
 		c.JSON(200, gin.H{
 			"message": "Users Listed successfully",
 		})

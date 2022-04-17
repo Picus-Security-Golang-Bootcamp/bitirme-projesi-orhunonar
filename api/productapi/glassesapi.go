@@ -2,6 +2,7 @@ package productapi
 
 import (
 	"finalproject/api"
+	"finalproject/pagination"
 	"finalproject/products"
 	database "finalproject/user_database"
 	"strconv"
@@ -75,7 +76,16 @@ func DeleteGlasses(c *gin.Context) {
 
 func ListGlasses(c *gin.Context) {
 
-	products.ListGlasses(c)
+	var pagination pagination.Pagination
+	page := c.Params.ByName("page")
+	limit := c.Params.ByName("limit")
+
+	pageInt, _ := strconv.Atoi(page)
+	limitInt, _ := strconv.Atoi(limit)
+
+	pagination.SetPagination(pageInt, limitInt, products.CountGlasses())
+	products.ListGlasses(c, pagination.Page, pagination.Limit)
+
 	c.JSON(200, gin.H{
 		"message": "Glasses listed successfully",
 	})

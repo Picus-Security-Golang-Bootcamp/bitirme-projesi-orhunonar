@@ -101,21 +101,16 @@ func CheckPant(Name string) bool {
 		return false
 	}
 }
-func ListPants(c *gin.Context) {
-
-	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
+func ListPants(c *gin.Context, page int, limit int) {
 
 	var pants []categories.Pants
-	db.Find(&pants)
+
+	db.Limit(limit).Offset((page - 1) * limit).Find(&pants)
 	for _, pant := range pants {
 		fmt.Println(pant.Name)
 	}
-	c.JSON(200, gin.H{
-		"pants": pants,
-	})
+	c.JSON(200, pants)
+
 }
 func BuyPants(Name string, Stock int) {
 
@@ -133,4 +128,15 @@ func BuyPants(Name string, Stock int) {
 	} else {
 		log.Println("Pant not found")
 	}
+}
+func CountPants() int {
+
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+
+	var pants []categories.Pants
+	db.Find(&pants)
+	return len(pants)
 }

@@ -12,6 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var db *gorm.DB
+
 func InsertShoes() {
 
 	// Open the CSV file for reading
@@ -102,21 +104,34 @@ func CheckShoe(Name string) bool {
 }
 
 //List all shoes
-func ListShoes(c *gin.Context) {
+// func ListShoes(c *gin.Context) {
+// 	var shoes []categories.Shoes
+// 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	db.Find(&shoes)
+// 	for _, shoe := range shoes {
+// 		fmt.Println(shoe.Name)
+// 	}
+// 	c.JSON(200, gin.H{
+// 		"shoes": shoes,
+// 	})
+
+// }
+
+//List all shoes with pagination
+func ListShoes(c *gin.Context, page int, limit int) {
 	var shoes []categories.Shoes
-	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	db.Find(&shoes)
+
+	db.Limit(limit).Offset((page - 1) * limit).Find(&shoes)
 	for _, shoe := range shoes {
 		fmt.Println(shoe.Name)
 	}
-	c.JSON(200, gin.H{
-		"shoes": shoes,
-	})
+	c.JSON(200, shoes)
 
 }
+
 func BuyShoes(Name string, Stock int) {
 	var shoe categories.Shoes
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
@@ -135,4 +150,13 @@ func BuyShoes(Name string, Stock int) {
 	} else {
 		log.Println("Shoes not found")
 	}
+}
+func CountShoes() int {
+	var shoes []categories.Shoes
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	db.Find(&shoes)
+	return len(shoes)
 }

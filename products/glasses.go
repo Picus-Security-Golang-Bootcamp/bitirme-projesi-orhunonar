@@ -98,19 +98,14 @@ func CheckGlasses(Name string) bool {
 	}
 }
 
-func ListGlasses(c *gin.Context) {
-	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
+func ListGlasses(c *gin.Context, page int, limit int) {
 	var glasses []categories.Glasses
-	db.Find(&glasses)
-	for _, glasses := range glasses {
-		fmt.Println(glasses.Name)
+
+	db.Limit(limit).Offset((page - 1) * limit).Find(&glasses)
+	for _, glass := range glasses {
+		fmt.Println(glass.Name)
 	}
-	c.JSON(200, gin.H{
-		"glasses": glasses,
-	})
+	c.JSON(200, glasses)
 }
 func BuyGlasses(Name string, Stock int) {
 	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
@@ -126,4 +121,13 @@ func BuyGlasses(Name string, Stock int) {
 	} else {
 		log.Println("Glasses not found")
 	}
+}
+func CountGlasses() int {
+	db, err := gorm.Open(postgres.Open("host=localhost user=postgres password=admin dbname=Bucket port=5432 sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	var glasses []categories.Glasses
+	db.Find(&glasses)
+	return len(glasses)
 }

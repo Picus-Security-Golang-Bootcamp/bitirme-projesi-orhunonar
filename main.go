@@ -4,6 +4,7 @@ import (
 	"finalproject/api"
 	"finalproject/api/cartapi"
 	"finalproject/api/productapi"
+	"finalproject/products/categories"
 	"finalproject/products/search"
 
 	"github.com/gin-gonic/gin"
@@ -26,14 +27,14 @@ func main() {
 	r.POST("/SignIn/:name,username,password,email,confirm_password", api.SignIn)
 	r.POST("/LogIn/:username,password", api.LogIn)
 	r.POST("/create_super_user", api.SuperUser)
-	r.GET("/list_users", api.ListUsers)
+	r.GET("/list_users/:page,limit", api.ListUsers)
 	r.DELETE("/delete_user/:username", api.DeleteUser)
 	r.GET("/get_user/:username", api.SearchUser)
 
 	// FOR SHOES
 	r.POST("/create_shoes_category", productapi.CreateShoesCategory)
 	r.POST("/add_shoes/:brand,name,price,stock,rating,size,", productapi.AddShoes)
-	r.GET("/list_shoes", productapi.ListShoes)
+	r.GET("/list_shoes/:page,limit", productapi.ListShoes)
 	r.DELETE("/delete_shoes/:name", productapi.DeleteShoes)
 	r.GET("/get_shoes/:name", search.SearchShoesByName)
 	r.PATCH("/buy_shoes/:name,stock", productapi.BuyShoes)
@@ -41,7 +42,7 @@ func main() {
 	// FOR PANTS
 	r.POST("/create_pants_category", productapi.CreatePantsCategory)
 	r.POST("/add_pants/:brand,name,price,stock,rating,size,", productapi.AddPants)
-	r.GET("/list_pants", productapi.ListPants)
+	r.GET("/list_pants/:page,limit", productapi.ListPants)
 	r.DELETE("/delete_pants/:name", productapi.DeletePants)
 	r.GET("/get_pants/:name", search.SearchPantsByName)
 	r.PATCH("/buy_pants/:name,stock", productapi.BuyPants)
@@ -49,7 +50,7 @@ func main() {
 	// FOR GLASSES
 	r.POST("/create_glasses_category", productapi.CreateGlassesCategory)
 	r.POST("/add_glasses/:brand,name,price,stock,rating,size,", productapi.AddGlasses)
-	r.GET("/list_glasses", productapi.ListGlasses)
+	r.GET("/list_glasses/:page,limit", productapi.ListGlasses)
 	r.DELETE("/delete_glasses/:name", productapi.DeleteGlasses)
 	r.GET("/get_glasses/:name", search.SearchGlassesByName)
 	r.PATCH("/buy_glasses/:name,stock", productapi.BuyGlasses)
@@ -67,6 +68,9 @@ func main() {
 	r.DELETE("/delete_cart", cartapi.ClearCart)
 	r.POST("/cancled_order", cartapi.CancelOrder)
 	r.GET("/old_order", cartapi.GetOldOrders)
+
+	//List Categories
+	r.GET("/list_categories", categories.ListCategories)
 
 	// listen and serve on port 8080
 	r.Run(":8080")

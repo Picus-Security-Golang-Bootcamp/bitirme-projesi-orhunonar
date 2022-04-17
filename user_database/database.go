@@ -129,9 +129,10 @@ func DeleteUser(Username string) {
 		log.Println("User not found")
 	}
 }
-func ListUsers(c *gin.Context) {
+
+func ListUsers(c *gin.Context, page int, limit int) {
 	var users []User
-	db.Find(&users)
+	db.Limit(limit).Offset((page - 1) * limit).Find(&users)
 	for _, user := range users {
 		fmt.Println(user.Name)
 	}
@@ -142,4 +143,10 @@ func SearchUser(c *gin.Context, username string) {
 	var user User
 	db.Where("username = ?", username).First(&user)
 	c.JSON(200, user)
+}
+func CountUsers() int {
+	var users []User
+	db.Find(&users)
+	return len(users)
+
 }
